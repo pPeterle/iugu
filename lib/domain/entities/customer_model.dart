@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:iugu/domain/entities/data_entry/custom_variables.dart';
+import 'data_entry/custom_variables.dart';
+import 'payment_method_model.dart';
 
 class CustomersModel {
   int totalItems;
@@ -30,13 +31,15 @@ class CustomersModel {
   factory CustomersModel.fromMap(Map<String, dynamic> map) {
     return CustomersModel(
       totalItems: map['total_items'] ?? map['totalItems'],
-      items: List<CustomerModel>.from(map['items']?.map((x) => CustomerModel.fromMap(x))),
+      items: List<CustomerModel>.from(
+          map['items']?.map((x) => CustomerModel.fromMap(x))),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CustomersModel.fromJson(String source) => CustomersModel.fromMap(json.decode(source));
+  factory CustomersModel.fromJson(String source) =>
+      CustomersModel.fromMap(json.decode(source));
 
   @override
   String toString() => 'CustomersModel(totalItems: $totalItems, items: $items)';
@@ -59,107 +62,104 @@ class CustomerModel {
   String? notes;
   String? createdAt;
   String? updatedAt;
-  List<CustomVariables>? customVariables;
-  String? zipCode;
-  int? number;
-  String? complement;
+  String? ccEmails;
   String? cpfCnpj;
-  CustomerModel({
-    this.id,
-    this.email,
-    this.name,
-    this.notes,
-    this.createdAt,
-    this.updatedAt,
-    this.customVariables,
-    this.zipCode,
-    this.number,
-    this.complement,
-    this.cpfCnpj,
-  });
+  String? zipCode;
+  String? number;
+  String? complement;
+  String? phone;
+  String? phonePrefix;
+  String? defaultPaymentMethodId;
+  String? city;
+  String? state;
+  String? district;
+  String? street;
+  List<CustomVariables>? customVariables;
+  List<PaymentMethodModel>? paymentMethods;
 
-  CustomerModel copyWith({
-    String? id,
-    String? email,
-    String? name,
-    String? notes,
-    String? createdAt,
-    String? updatedAt,
-    List<CustomVariables>? customVariables,
-    String? zipCode,
-    int? number,
-    String? complement,
-    String? cpfCnpj,
-  }) {
-    return CustomerModel(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      name: name ?? this.name,
-      notes: notes ?? this.notes,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      customVariables: customVariables ?? this.customVariables,
-      zipCode: zipCode ?? this.zipCode,
-      number: number ?? this.number,
-      complement: complement ?? this.complement,
-      cpfCnpj: cpfCnpj ?? this.cpfCnpj,
-    );
+  CustomerModel(
+      {this.id,
+      this.email,
+      this.name,
+      this.notes,
+      this.createdAt,
+      this.updatedAt,
+      this.ccEmails,
+      this.cpfCnpj,
+      this.zipCode,
+      this.number,
+      this.complement,
+      this.phone,
+      this.phonePrefix,
+      this.defaultPaymentMethodId,
+      this.city,
+      this.state,
+      this.district,
+      this.street,
+      this.customVariables,
+      this.paymentMethods});
+
+  CustomerModel.fromMap(Map<String, dynamic> json) {
+    id = json['id'];
+    email = json['email'];
+    name = json['name'];
+    notes = json['notes'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    ccEmails = json['cc_emails'];
+    cpfCnpj = json['cpf_cnpj'];
+    zipCode = json['zip_code'];
+    number = json['number'];
+    complement = json['complement'];
+    phone = json['phone'];
+    phonePrefix = json['phone_prefix'];
+    defaultPaymentMethodId = json['default_payment_method_id'];
+    city = json['city'];
+    state = json['state'];
+    district = json['district'];
+    street = json['street'];
+    if (json['custom_variables'] != null) {
+      customVariables = [];
+      json['custom_variables'].forEach((v) {
+        customVariables?.add(new CustomVariables.fromMap(v));
+      });
+    }
+    if (json['payment_methods'] != null) {
+      paymentMethods = [];
+      json['payment_methods'].forEach((v) {
+        paymentMethods?.add(new PaymentMethodModel.fromMap(v));
+      });
+    }
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'email': email,
-      'name': name,
-      'notes': notes,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'custom_variables': customVariables?.map((x) => x.toJson()).toList(),
-      'zip_code': zipCode,
-      'number': number,
-      'complement': complement,
-      'cpf_cnpj': cpfCnpj,
-    };
-  }
-
-  factory CustomerModel.fromMap(Map<String, dynamic> map) {
-    return CustomerModel(
-      id: map['id'],
-      email: map['email'],
-      name: map['name'],
-      notes: map['notes'],
-      createdAt: map['created_at'],
-      updatedAt: map['updated_at'],
-      customVariables: List<CustomVariables>.from(map['custom_variables']?.map((x) => CustomVariables.fromMap(x))),
-      zipCode: map['zip_code'],
-      number: map['number'] != null
-          ? map['number'] is String
-              ? int.parse(map['number'])
-              : map['number']
-          : null,
-      complement: map['complement'],
-      cpfCnpj: map['cpf_cnpj'],
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory CustomerModel.fromJson(String source) => CustomerModel.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'CustomerModel(id: $id, email: $email, name: $name, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, customVariables: $customVariables, zipCode: $zipCode, number: $number, complement: $complement, cpfCnpj: $cpfCnpj)';
-  }
-
-  @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-
-    return o is CustomerModel && o.id == id && o.email == email && o.name == name && o.notes == notes && o.createdAt == createdAt && o.updatedAt == updatedAt && o.zipCode == zipCode && o.number == number && o.complement == complement && o.cpfCnpj == cpfCnpj;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^ email.hashCode ^ name.hashCode ^ notes.hashCode ^ createdAt.hashCode ^ updatedAt.hashCode ^ customVariables.hashCode ^ zipCode.hashCode ^ number.hashCode ^ complement.hashCode ^ cpfCnpj.hashCode;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['email'] = this.email;
+    data['name'] = this.name;
+    data['notes'] = this.notes;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['cc_emails'] = this.ccEmails;
+    data['cpf_cnpj'] = this.cpfCnpj;
+    data['zip_code'] = this.zipCode;
+    data['number'] = this.number;
+    data['complement'] = this.complement;
+    data['phone'] = this.phone;
+    data['phone_prefix'] = this.phonePrefix;
+    data['default_payment_method_id'] = this.defaultPaymentMethodId;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['district'] = this.district;
+    data['street'] = this.street;
+    if (this.customVariables != null) {
+      data['custom_variables'] =
+          this.customVariables?.map((v) => v.toJson()).toList();
+    }
+    if (this.paymentMethods != null) {
+      data['payment_methods'] =
+          this.paymentMethods?.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
